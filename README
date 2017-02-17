@@ -1,0 +1,83 @@
+
+You'll need a "microdescs-*" download from collector.torproject.org.  Unpack
+it here. You'll need to edit the scripts if you pick something besides Jan
+2017.
+
+You'll need stem and sqlite3.
+
+This probably is not a very efficient way to do this analysis.  I mainly
+wanted to practice something simple with stem and sqlite.
+
+First, you run populate*py, to make some big sqlite databases.  I hope you
+have a few free GB of disk space!
+
+Then you run analyze*py, to generate output on stdout.
+
+===
+
+The populate.py and analyze.py scripts are for looking at microdescriptor
+change over time.  The analysis script produces lines like this:
+
+000a10d43011ea4928a35f610405f92b4433b4dc => 5 5 / 674 oO oO oO oO
+
+Meaning:
+   000a10d43011ea4928a35f610405f92b4433b4dc -- relay fingerprint
+   5   This relay had 5 distinct microdescriptors.
+   5   This relay had 5 unbroken sequences of having the same md.
+   674 This relay appeared in 674 consensuses
+   oO  The first time this relay's microdesc changed, its onion keys both
+       changed
+    ...
+
+The letter codes indicating changes in microdescriptors are:
+
+   ('o', 'onion_key'),
+   ('O', 'ntor_onion_key'),
+   ('a', 'or_addressses'),
+   ('f', 'family'),
+   ('4', 'exit_policy'),
+   ('6', 'exit_policy_v6'),
+   ('k', 'identifiers'),
+   ('p', 'protocols')
+
+===
+
+The populate-consenus and analyze-consensus.py scripts look at routerstatus
+change over time in the consensus.  They produce lines that look like:
+
+000a10d43011ea4928a35f610405f92b4433b4dc => 58 59 / 674 +* dw d dM d w d w F Fw d d w d F d w dvV w dw d dM d d -* +* w F d w d d d w d dM d dw w d w d d d -* +* d F F d dM d d d d d d d d F dFv
+
+Meaning:
+  000a10d43011ea4928a35f610405f92b4433b4dc -- relay fingerprint
+  58  this relay had 58 distinct routerstatus blocks
+  59  this relay had 59 unbroken sequences with the same routerstatus block
+  674  this relay appeared in 674 consensuses
+   +*  First this relay appeared
+   dw  Then its publication date and bandwidth weight changed
+   d   Then its publication date changed.
+   dM  Then its publication date and microdesc hash changed.
+    ...
+
+
+The letter codes are:
+
+-*   entry removed
++*   entry added
+
+('n', 'nickname'),
+('i', 'fingerprint'),
+('a', 'address'),
+('d', 'published'),
+('p', 'or_port'),
+('P', 'dir_port'),
+('F', 'flags'),
+('v', 'version_line'),
+('V', 'protocols'),
+('w', 'bandwidth'),
+('W', 'measured'),
+('u', 'unrecognized_bandwidth_entries'),
+('M', 'digest')
+
+===
+
+I put the results from January in the results subdirectory.
