@@ -1,0 +1,75 @@
+#!/usr/bin/python
+
+import subprocess
+import os
+import sys
+
+SRCDIR = "./microdescs-2017-01"
+CDIR = os.path.join(SRCDIR, "consensus-microdesc")
+
+def list_consensuses(consensus_path):
+    fnames = []
+
+    for dirpath, _, filenames in os.walk(consensus_path):
+        for fname in filenames:
+            consensus_fname = os.path.join(dirpath, fname)
+            fnames.append(consensus_fname)
+
+    fnames.sort()
+
+    return fnames
+
+def iter_pairs(lst, stride=1):
+    for i in range(0, len(lst)-stride):
+        yield lst[i], lst[i+stride]
+
+def diff_size(f1,f2):
+    with subprocess.Popen(["diff", "-e", f1, f2],
+                          stdout=subprocess.PIPE) as diffP:
+        output = diffP.stdout.read()
+        diffsize = len(output)
+
+    with subprocess.Popen(["gzip", "-9", "-c"],
+                          stdin=subprocess.PIPE,
+                          stdout=subprocess.PIPE) as gzipP:
+        gzipped, _ = gzipP.communicate(output, timeout=60)
+        #gzipP.stdin.write(output)
+        #gzipP.stdin.close()
+        #gzipped = gzipP.stdout.read()
+        gzipsize = len(gzipped)
+
+    with subprocess.Popen(["xz", "-9", "-c", "-"],
+                          stdin=subprocess.PIPE,
+                          stdout=subprocess.PIPE) as xzP:
+        xzipped, _ = xzP.communicate(output, timeout=60)
+        #xzP.stdin.write(output)
+        #xzP.stdin.close()
+        #xzipped = xzP.stdout.read()
+        xzippedSize = len(xzipped)
+
+    return (diffsize, gzipsize, xzippedSize)
+
+if len(sys.argv) > 1:
+    CDIR = sys.argv[1]
+
+CONS = list_consensuses(CDIR)[:100]
+
+for stride in list(range(1,6))+list(range(6,73,6)):
+    rT, dT, gT, xT = 0, 0,0,0
+    n = 0
+    for c1, c2 in iter_pairs(CONS, stride):
+        n += 1
+        a,b,c = diff_size(c1,c2)
+        rT += os.stat(c2).st_size
+        dT += a
+        gT += b
+        xT += c
+
+    rM = rT // n
+    dM = dT // n
+    gM = gT // n
+    xM = xT // n
+    print("{}:\t{}\t{}\t{}\t{}".format(stride, rM, dM, gM, xM))
+    sys.stdout.flush()
+
+

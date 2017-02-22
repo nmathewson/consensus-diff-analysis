@@ -1,0 +1,38 @@
+#!/usr/bin/python
+
+import re
+import sys
+
+def round_to_mul_of(a, n):
+    a -= a % n
+    return a
+
+def smooth_bandwidth(b):
+    start = b
+    mul = 1
+    while b >= 10:
+        mul *= 10
+        b /= 10.0
+
+    assert 0 <= b < 10
+    if b < 2:
+        b = round_to_mul_of(b, .1)
+    elif b < 5:
+        b = round_to_mul_of(b, .2)
+    else:
+        b = round_to_mul_of(b, .5)
+
+    b *= mul
+    b = round_to_mul_of(b, mul/10.0)
+    return int(b)
+
+def convert_dates(f_in, f_out):
+    p = re.compile(r'w Bandwidth=(\d+)(.*)')
+    for line in f_in.readlines():
+        if line.startswith("w "):
+            m = p.match(line)
+            w = smooth_bandwidth(int(m.group(1)))
+            line = "w Bandwidth={}{}\n".format(w, m.group(2))
+        f_out.write(line)
+
+convert_dates(sys.stdin, sys.stdout)

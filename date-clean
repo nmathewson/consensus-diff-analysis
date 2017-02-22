@@ -1,0 +1,31 @@
+#!/usr/bin/python
+
+import re
+import sys
+import time
+import calendar
+
+def fix_date(s):
+    t = time.strptime(s, "%Y-%m-%d %H:%M:%S")
+    s = calendar.timegm(t)
+    s -= s % (15*60*60)
+    t = time.gmtime(s)
+    return time.strftime("%Y-%m-%d %H:%M:%S", t)
+
+# Uncomment this to analyze the effects of the published date never
+# changing.
+#
+#def fix_date(s):
+#    return "2030-01-01 00:00:00"
+
+def convert_dates(f_in, f_out):
+    p = re.compile(r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}')
+    for line in f_in.readlines():
+        if line.startswith("valid-after "):
+            m = p.search(line)
+            today = fix_date(m.group(0))
+        elif line.startswith("r "):
+            line = p.sub(today, line)
+        f_out.write(line)
+
+convert_dates(sys.stdin, sys.stdout)

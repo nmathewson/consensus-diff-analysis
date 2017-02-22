@@ -80,4 +80,28 @@ The letter codes are:
 
 ===
 
+The diff-size tool determines the mean size for ed-based consensus
+diffs.  These lines take the form of:
+
+4:	2129758	269793	119117	107439
+
+The first number is the "stride" -- on this line, we're comparing
+consensuses that are 4 apart.
+
+The second number is the mean consensus size.
+
+The third number is the mean diff size
+
+The fourth number is the mean gzip-compressed diff size
+
+The fifth number is the mean xz-compressed diff size.
+
+
+
+To examine the effects of different changes in the consensus generation
+rules, you can pre-process the consensuses.  Two tools for doing that
+are date-clean and weight-clean.
+
+===
+
 I put the results from January in the results subdirectory.
