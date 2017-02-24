@@ -52,7 +52,7 @@ def diff_size(f1,f2):
 if len(sys.argv) > 1:
     CDIR = sys.argv[1]
 
-CONS = list_consensuses(CDIR)[:100]
+CONS = list_consensuses(CDIR)
 
 for stride in list(range(1,6))+list(range(6,73,6)):
     rT, dT, gT, xT = 0, 0,0,0
