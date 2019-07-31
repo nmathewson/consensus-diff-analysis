@@ -6,7 +6,7 @@ import os
 import hashlib
 
 DBNAME = "conhistory.sqlite"
-SRCDIR = "./microdescs-2017-01"
+SRCDIR = "./microdescs-2019-06"
 
 def make_schema(cursor):
     cursor.execute("""CREATE TABLE IF NOT EXISTS history (

@@ -5,7 +5,7 @@ import stem.descriptor
 import os
 
 DBNAME = "mdhistory.sqlite"
-SRCDIR = "./microdescs-2017-01"
+SRCDIR = "./microdescs-2019-06"
 
 def make_schema(cursor):
     cursor.execute("""CREATE TABLE IF NOT EXISTS history (
@@ -14,7 +14,7 @@ def make_schema(cursor):
     cursor.execute("""CREATE INDEX IF NOT EXISTS i_history_rid ON
                         history ( relay_id, con_published );""")
     cursor.execute("""CREATE INDEX IF NOT EXISTS i_relay_id ON
-                        history ( relay_id );"""
+                        history ( relay_id );""")
     cursor.execute("""CREATE VIEW relays AS SELECT DISTINCT relay_id from history;""")
 
 

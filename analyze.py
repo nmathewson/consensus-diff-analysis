@@ -4,7 +4,7 @@ import sqlite3
 import os
 import stem.descriptor
 DBNAME = "mdhistory.sqlite"
-SRCDIR = "./microdescs-2017-01"
+SRCDIR = "./microdescs-2019-06"
 
 def md_filename(digest):
     return os.path.join(SRCDIR, "micro", digest[0], digest[1], digest)
@@ -29,8 +29,9 @@ def find_differences(mdlist):
     for digest in mdlist:
         try:
             md = list(stem.descriptor.parse_file(md_filename(digest)))[0]
-        except:
-            print("whoops")
+        
+        except IOError:
+            print("desc not in set")
             continue
 
         if prev_md == None:
